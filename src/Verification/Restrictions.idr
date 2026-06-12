@@ -270,10 +270,10 @@ mutual
                                 |> filter (\node' => node' !! attr == Just value)
                 in
 
-                if unique (const True) sameValue then
-                    []
-                else
+                if length sameValue > 1 then
                     [NotUnique attr value sameValue]
+                else
+                    []
 
     errors (UniqueTag attr) node =
         case node !! attr of
@@ -284,10 +284,10 @@ mutual
                                 |> filter (\node' => tag node' == tag node && node' !! attr == Just value)
                 in
 
-                if unique (const True) sameValue then
-                    []
-                else
+                if length sameValue > 1 then
                     [NotUniqueTag attr value (tag node) sameValue]
+                else
+                    []
 
     -- Attributes values within the context of the document
     errors (References attr attr') node =
@@ -484,10 +484,16 @@ mutual
             [MultipleTranslationPerLanguage] 
 
     errors UniqueDescription head =
-        if head |> descendants |> filter (`is` Meta) |> unique (metaHasName "description") then
-            []
-        else
+        let withDescription =
+                descendants head
+                |> filter (`is` Meta)
+                |> filter (metaHasName "description")
+        in
+        
+        if length withDescription > 1 then
             [MultipleDescription]
+        else
+            []
 
     errors UniqueThemeColorPerMedia head =
         let media =
@@ -496,16 +502,22 @@ mutual
                 |> map metaMedia
         in
                 
-        if  isSet media then
+        if isSet media then
             []
         else
             [MultipleThemeColorPerMedia]
 
     errors UniqueColorScheme head =
-        if head |> descendants |> filter (`is` Meta) |> unique (metaHasName "color-scheme") then
-            []
-        else
+        let withColorScheme =
+                descendants head
+                |> filter (`is` Meta)
+                |> filter (metaHasName "color-scheme")
+        in
+
+        if length withColorScheme > 1 then
             [MultipleColorScheme]
+        else
+            []
 
     errors UniqueEncoding head =
         let elems = descendants head |> filter (`is` Meta)

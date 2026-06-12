@@ -6,20 +6,6 @@ import Util.Map
 import Data.Maybe
 import Data.String.Extra
 
-||| Returns True if exactly one element in the list meets the predicate
-public export
-unique : (a -> Bool) -> List a -> Bool
-unique pred list =
-    go False list where 
-    -- The boolean flag is True if an element meeting the predicate has already been found
-    go: Bool -> List a -> Bool
-    go _ [] = True 
-    go flag (x::xs) =
-        if pred x then
-            if flag then False else go True xs
-        else
-            go flag xs
-
 ||| Returns true if the value is an element of the list
 public export
 contains: Eq a => List a -> a -> Bool
