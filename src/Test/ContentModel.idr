@@ -11,7 +11,7 @@ tag: (
     parses (Tag P) [p [], p []] [p []],
     parses (Tag P) [p [], h1 []] [h1 []],
     doesntParse (Tag P) [],
-    doesntParse (Tag P) [head [], p []]
+    doesntParse (Tag P) [head'' [], p []]
     )
 tag = (Refl, Refl, Refl, Refl, Refl)
 
