@@ -467,12 +467,10 @@ parseNode node = do
 export
 parse: JSON -> Maybe (Tree Index,Node)
 parse (JArray xs) = do
+    -- If the document contains a DOCTYPE declaration,
+    -- it will be parsed by himalaya as two documents
+    -- so we take the last element
     x <- last' xs
-    tree <- parseNode x
-    Just (split tree)
--- If the document contains a DOCTYPE declaration,
--- it will be parsed by himalaya as two documents
-parse (JArray [_,x]) = do
     tree <- parseNode x
     Just (split tree)
     
