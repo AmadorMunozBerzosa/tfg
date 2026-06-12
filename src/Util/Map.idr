@@ -40,11 +40,12 @@ has map key = isJust (lookup key map)
 ||| Forms a map from a list of (key,value) pairs
 public export
 fromList: List (key,value) -> Map key value
-fromList [] = []
-fromList ((key,value)::xs) = (key,value) :: fromList xs
+fromList = foldr (::) []
 
 ||| Forms a list of (key,value) pairs from a map
 public export
 toList: Map key value -> List (key,value)
-toList [] = []
-toList ((key,value)::xs) = (key,value) :: toList xs
+toList map = go map [] where
+    go: Map key value -> List (key,value) -> List (key,value)
+    go [] list = list
+    go ((key,value)::xs) list = go xs ((key,value)::list)

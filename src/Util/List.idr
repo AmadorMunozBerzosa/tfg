@@ -32,7 +32,7 @@ isSet: Eq a => List a -> Bool
 isSet = go [] where
     go : List a -> List a -> Bool
     go aux [] = True
-    go aux (x::xs) = (not (contains aux x)) && go (x::aux) xs
+    go aux (x::xs) = if contains aux x then False else go (x::aux) xs
 
 ||| Classifies the elements of a list into two lists
 public export
@@ -49,11 +49,10 @@ classify (x::xs) =
 ||| Converts a list of pairs into a pair of lists
 public export
 split: List (a,b) -> (List a, List b)
-split [] = ([], [])
-split ((a,b)::xs) =
-    let (as,bs) = split xs in
-
-    (a::as, b::bs)
+split list = go list [] [] where
+    go: List (a,b) -> List a -> List b -> (List a, List b)
+    go [] as bs = (as, bs)
+    go ((a,b)::xs) as bs = go xs (a::as) (b::bs)
 
 ||| Given a value, it tries to apply a list of function until one of them
 ||| returns `Just`. If none, it returns a default value
