@@ -1,9 +1,12 @@
 ||| Collection of types associated with conditions on HTML elements
 module Core.Condition
 
+import Derive.Prelude
 import Core.Tags
 import Core.Attributes
 import Data.String
+
+%language ElabReflection
 
 namespace Category
     ||| Kind of element according to its role within its containing document
@@ -29,28 +32,7 @@ namespace Category
         | Resettable
         | AutocapitalizeAndAutocorrectInheriting
 
-
-public export
-Eq Category where
-      Metadata == Metadata = True
-      Flow == Flow = True
-      Sectioning == Sectioning = True
-      Heading == Heading = True
-      Phrasing == Phrasing = True
-      Embedded == Embedded = True
-      Interactive == Interactive = True
-      Palpable == Palpable = True
-      ScriptSupporting == ScriptSupporting = True
-      FormAssociated == FormAssociated = True
-      Listed  == Listed = True
-      Labelable == Labelable = True
-      SelectElementInnerContent == SelectElementInnerContent = True
-      OptgroupElementInnerContent == OptgroupElementInnerContent = True
-      OptionElementInnerContent == OptionElementInnerContent = True
-      Submitable == Submitable = True
-      Resettable == Resettable = True
-      AutocapitalizeAndAutocorrectInheriting == AutocapitalizeAndAutocorrectInheriting = True
-      _ == _ = False
+%runElab derive "Category" [Eq]
 
 public export prefix 10 >>>
 
