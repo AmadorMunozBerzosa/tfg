@@ -1,6 +1,7 @@
 ||| Tools to verify that a HTML element's children follow its parent's content model
 module Verification.ContentModel 
 
+import Util.Application
 import Core.Tags
 import Core.Node
 import Core.Specification
@@ -65,7 +66,7 @@ parser' (Many model) = parser' model |> many |> ignore
 parser' (AtLeastOne model) = parser' model |> atLeastOne |> ignore
 parser' (Intermixed category model) = parser' model |> intermixed (\node => categories node `contains` category)
 parser' (Sequence list) = sequence_ (map parser' list)
-parser' (Any list) = choice (map (delay . parser') list)
+parser' (Any list) = choice (map (parser' .> delay) list)
 
 parser' (Transparent _) = anything -- Transparent elements delegate their requirements to their parent
 
@@ -91,7 +92,7 @@ removeWhitespaceAndComments: List NodePosition -> List NodePosition
 removeWhitespaceAndComments = filter (\node =>
     case focus node of
         Leaf (Comment _) => False
-        Leaf (Text string) => (not . null . trim) string
+        Leaf (Text string) => string |> trim |> null |> not
         _ => True
     )
 
@@ -100,7 +101,7 @@ removeWhitespaceAndComments = filter (\node =>
 public export
 parser: ContentModel -> Parser (List NodePosition) Unit
 parser model = From (\elements =>
-    run (parser' model) ((replaceTransparent . removeWhitespaceAndComments) elements)
+    run (parser' model) ((removeWhitespaceAndComments .> replaceTransparent) elements)
     )
     
 

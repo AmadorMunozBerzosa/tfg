@@ -6,6 +6,7 @@ import Core.Attributes
 import Util.List
 import Util.Tree
 import Util.Map
+import Util.Application
 import Data.String
 import Data.List
 
@@ -50,7 +51,7 @@ is node tagName = tag node == Just tagName
 public export
 hasContent: Node -> Bool
 hasContent (Leaf (Comment _)) = False
-hasContent (Leaf (Text string)) = (not . null . trim) string
+hasContent (Leaf (Text string)) = (trim .> null .> not) string
 hasContent _ = True
 
 ||| Returns the node's attributes, or the empty map if it's not an element
@@ -115,4 +116,5 @@ namespace Tree
   public export
   findElementsBy: Attribute -> String -> (NodePosition -> Bool) -> NodePosition -> List NodePosition
   findElementsBy attr value condition node =
-    filter (\node' => (node' !! attr) == Just value) (filter condition (descendants node))
+    descendants node
+    |> filter (\node' => condition node' && (node' !! attr) == Just value)

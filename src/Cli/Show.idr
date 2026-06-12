@@ -311,12 +311,11 @@ Show Node where
 
 public export
 Show (List (Node, Indexed Error)) where
-    show errors =
-        errors
-        |> map(  \(node, (line,col), error) =>
+    show =
+        map(\(node, (line,col), error) =>
             "Ln \{show (line + 1)}, Col \{show (col + 1)}: \{show node} | \{show error}"
         )
-        |> join "\n"
+        .> join "\n"
 
 public export
 [Full] Show Node where

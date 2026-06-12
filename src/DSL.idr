@@ -18,7 +18,7 @@ Cast (Attribute,String) (Either (Attribute,String) Node) where
 ||| We allow consumers to use strings in lieu of text nodes
 public export
 Cast String (Either (Attribute,String) Node) where
-    cast = Right . Leaf . Text
+    cast = Text .> Leaf .> Right
 
 ||| Defines an element node with the given tag
 public export

@@ -3,6 +3,7 @@ module Util.Parser
 
 import Data.String
 import Data.String.Extra
+import Util.Application
 import Util.List
 import Data.Nat
 import Data.Maybe
@@ -265,7 +266,7 @@ namespace List
     ||| Parses a given parser, surrounded by tokens that meet a particular condition
     public export
     intermixed: (b -> Bool) -> Parser (List b) a -> Parser (List b) a
-    intermixed pred parser = From (\tokens => run parser (filter (not . pred) tokens)) 
+    intermixed pred parser = From (\tokens => run parser (filter (pred .> not) tokens)) 
 
 namespace String
     ||| Replaces a parser with a version that produces the tokens the first consumes

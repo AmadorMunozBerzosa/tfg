@@ -11,6 +11,7 @@ import Definitions.Specification
 import Util.Map
 import Util.Tree
 import Util.List
+import Util.Application
 import Data.Maybe
 import Data.List
 import Data.String
@@ -47,15 +48,15 @@ parser _ SingleLine = singleLine
 parser _ NoWhitespace = singleWord
 
 parser _ NonNegative = ignore natural
-parser _ Positive = natural >>= (guard . (/= 0))
+parser _ Positive = natural >>= (/= 0) .> guard
 parser _ Integer' = ignore integer
 parser _ Float = ignore double
-parser _ (LessThan num) = double >>= (guard . (<= num))
-parser _ (GreaterThan num) = double  >>= (guard . (>= num))
+parser _ (LessThan num) = double >>= (<= num) .> guard
+parser _ (GreaterThan num) = double  >>= (>= num) .> guard
 
 parser _ Character = ignore char
 parser name (List separator format) = ignore (list (literal separator) (parser name format))
-parser name (Set separator format) = list (literal separator) (keepOriginal (parser name format)) >>= (guard . isSet)
+parser name (Set separator format) = list (literal separator) (keepOriginal (parser name format)) >>= isSet .> guard
 
 parser name Boolean = nothing || literal (show name)
 
@@ -80,15 +81,15 @@ parser _ CircleCoords =
 
 parser _ RectCoords = 
     list (literal " ") integer
-    >>= ( guard .
+    >>= (
         \case
             [first, second, third, fourth] => first < third && second < fourth
             _ => False
-    )
+    ) .> guard
 
 parser _ PolygonCoords =
     list (literal " ") integer
-    >>= (guard . (\list => not (null list) && (cast (length list) `mod` 2) == 0))
+    >>= (\list => not (null list) && (cast (length list) `mod` 2) == 0) .> guard
 
 parser _ NavigableTargetName = From (\string =>
     if
@@ -171,4 +172,4 @@ validate (Leaf _ ) = []
 validate (Branch (Element (Custom _) _) _) = [] -- Autonomous custom elements can have any attributes
 validate (Branch element _) =
     effectiveAttributes element \\ validAttributes element
-    |> filter (not . validCustomAttribute) 
+    |> filter (validCustomAttribute .> not)

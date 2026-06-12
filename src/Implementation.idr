@@ -10,6 +10,7 @@ import public Util.List
 import public Util.Map
 import public Util.Parser
 import public Util.Tree
+import public Util.Application
 
 import public Core.Tags
 import public Core.Attributes

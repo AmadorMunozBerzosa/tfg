@@ -1,6 +1,7 @@
 ||| Tools to recollect validation errors on a HTML element
 module Verification.ErrorReporting
 
+import Util.Application
 import Core.Condition
 import Core.Tags
 import Core.Specification
@@ -50,4 +51,4 @@ errors' node =
 
 public export
 errors: Node -> List Error
-errors = errors' . fromTree
+errors = fromTree .> errors'

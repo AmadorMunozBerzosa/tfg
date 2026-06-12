@@ -1,6 +1,7 @@
 ||| Tools to verify that a HTML follows the non-trivial restrictions associated with it
 module Verification.Restrictions
 
+import Util.Application
 import Core.Node
 import Core.Specification
 import Core.Condition
@@ -116,7 +117,7 @@ mutual
     categories node =
         case focus node of
             Leaf (Text string) =>
-                if (null . trim) string then
+                if string |> trim |> null then
                     [Phrasing, Flow]
                 else
                     [Phrasing, Flow, Palpable]
@@ -156,10 +157,10 @@ mutual
     errors (Tag tag) node = if node `is` tag then [] else [ExpectedTag tag]
     errors (Category cat) node = if node `is` cat then [] else [ExpectedCategory cat]
     errors HasContent node =
-        case children node |> find (hasContent . focus) of
+        case children node |> find (focus .> hasContent) of
             Nothing => [NoContent]
             Just _ => []
-    errors Childless node = if children node |> all (isNothing . tag) then [] else [HasChildren]
+    errors Childless node = if children node |> all (tag .> isNothing) then [] else [HasChildren]
     errors ValidTagName node =
         case tag node of
             Just (Custom name) =>
@@ -301,7 +302,7 @@ mutual
     errors (ReferencesTag attr (tag',attr')) node =
         case node !! attr of
             Just value =>
-                let reference = root node |> findElementBy attr' value ((== Just tag') . tag) in
+                let reference = root node |> findElementBy attr' value (tag .> (== Just tag')) in
 
                 if isJust reference then [] else [NoReferenceTag attr (tag', attr') value]
 
@@ -578,7 +579,7 @@ mutual
         |> any (\node =>
             (node `is` Option) && (
                 case node !! Value of
-                    Nothing => all (not . hasContent . focus) (children node)
+                    Nothing => all (focus .> hasContent .> not) (children node)
                     Just "" => True
                     Just _ => False
             )

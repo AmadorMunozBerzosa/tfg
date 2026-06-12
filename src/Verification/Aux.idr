@@ -8,6 +8,7 @@ import Data.String
 import Data.Maybe
 import Util.List
 import Util.Map
+import Util.Application
 import Util.Tree
 import Definitions.Specification
 import Core.Tags
@@ -29,14 +30,6 @@ owner node =
     case node !! For of
         Just form => findElement Name form (root node)
         Nothing => closest (`is` Form) node
-
-||| Returns True if the node contains an element with the given value for the "id" attribute
-public export
-hasId : NodePosition -> String -> Bool
-hasId node id =
-    node
-    |> descendants
-    |> any (\node' => node' !! Id == Just id) 
 
 -- Functions for verifying that headings are well nested, according to:
 -- https://html.spec.whatwg.org/multipage/sections.html#outline
@@ -82,7 +75,7 @@ namespace Heading
     ||| Returns the list of heading levels found within the element
     public export
     outline : NodePosition -> List Nat
-    outline node = node |> descendants |> mapMaybe level                
+    outline = descendants .> mapMaybe level                
 
     ||| Returns True if an outline is valid
     public export
@@ -131,16 +124,16 @@ namespace Table
             \node =>
                 case tag node of
                     Just Tr => [node]
-                    Just Thead => children node |> filter (`is` Tr)
-                    Just Tbody => children node |> filter (`is` Tr)
-                    Just Tfoot => children node |> filter (`is` Tr)
+                    Just Thead => node |> children |> filter (`is` Tr)
+                    Just Tbody => node |> children |> filter (`is` Tr)
+                    Just Tfoot => node |> children |> filter (`is` Tr)
                     _ => []
         )
 
     ||| Given a <tr> element, it returns the list of its <td>|<th> children
     public export
     cells: NodePosition -> List NodePosition
-    cells tr = children tr |> filter (\node => (node `is` Td) || (node `is` Th))
+    cells = children .> filter (\node => (node `is` Td) || (node `is` Th))
 
     ||| Extracts the (rowspan,colspan) dimensions of a <td> element
     public export
@@ -153,10 +146,7 @@ namespace Table
     ||| Extracts the matrix of (rowspan,colspan) dimensions of a <td> element
     public export
     tableDimensions : NodePosition -> List (List (Nat,Nat))
-    tableDimensions table =
-        table
-        |> rows
-        |> map (map tdDimensions . cells)
+    tableDimensions = rows .> map (cells .> map tdDimensions)
 
     ||| Given a list of cells and a candidate position, it returns the closest 
     ||| position not in the list within the same row to the right
@@ -250,12 +240,11 @@ namespace Table
     ||| via <colgroup> elements
     public export
     tableWidth: NodePosition -> Nat
-    tableWidth table =
-        table
-        |> children 
-        |> filter (`is` Colgroup)
-        |> map colgroupWidth
-        |> sum
+    tableWidth =
+        children 
+        .> filter (`is` Colgroup)
+        .> map colgroupWidth
+        .> sum
 
 
     ||| It returns True if the cells of a table don't overlap
