@@ -1,0 +1,8 @@
+package tfg-cli
+
+authors = "Amador Muñoz Berzosa"
+depends = contrib
+sourcedir = "src"
+executable = "cli"
+
+main = Cli.Main

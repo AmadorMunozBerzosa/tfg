@@ -1,0 +1,8 @@
+{
+    "name": "html-validate",
+    "version": "1.0.0",
+    "main": "Main.js",
+    "dependencies": {
+        "himalaya": "1.1.1"
+    }
+}
