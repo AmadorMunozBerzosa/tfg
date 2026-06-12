@@ -412,9 +412,9 @@ date =
     |> mapMaybe (\(year,month,digit,digit') =>
         let day = digit * 10 + digit'
             maxDay = (
-                if [1,3,5,7,8,10,12] `contains` month then
+                if month `elem` [1,3,5,7,8,10,12] then
                     31
-                else if [4,6,9,11] `contains` month then
+                else if month `elem` [4,6,9,11] then
                     30
                 else if (
                     year `mod` 400 == 0
@@ -441,9 +441,9 @@ yearlessDate =
     |> mapMaybe (\(month,digit,digit') =>
         let day = digit * 10 + digit'
             maxDay = (
-                if [1,3,5,7,8,10,12] `contains` month then
+                if month `elem` [1,3,5,7,8,10,12] then
                     31
-                else if [4,6,9,11] `contains` month then
+                else if month `elem` [4,6,9,11] then
                     30
                 else
                     29

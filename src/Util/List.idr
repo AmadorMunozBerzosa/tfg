@@ -6,19 +6,13 @@ import Util.Map
 import Data.Maybe
 import Data.String.Extra
 
-||| Returns true if the value is an element of the list
-public export
-contains: Eq a => List a -> a -> Bool
-contains [] _ = False
-contains (x::xs) a = if a == x then True else contains xs a
-
 ||| Returns True if the list has no repeated elements
 public export
 isSet: Eq a => List a -> Bool
 isSet = go [] where
     go : List a -> List a -> Bool
     go aux [] = True
-    go aux (x::xs) = if contains aux x then False else go (x::aux) xs
+    go aux (x::xs) = if x `elem` aux  then False else go (x::aux) xs
 
 ||| Classifies the elements of a list into two lists
 public export

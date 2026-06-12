@@ -59,12 +59,12 @@ parser' Text =
     |> ignore
 
 parser' (Tag t) = atomic (\node => tag node == Just t)
-parser' (Category category) = atomic (\node => categories node `contains` category)
+parser' (Category category) = atomic (\node => category `elem` categories node)
 
 parser' (Optional model) = parser' model |> optional |> ignore
 parser' (Many model) = parser' model |> many |> ignore
 parser' (AtLeastOne model) = parser' model |> atLeastOne |> ignore
-parser' (Intermixed category model) = parser' model |> intermixed (\node => categories node `contains` category)
+parser' (Intermixed category model) = parser' model |> intermixed (\node => category `elem` categories node)
 parser' (Sequence list) = sequence_ (map parser' list)
 parser' (Any list) = choice (map (parser' .> delay) list)
 

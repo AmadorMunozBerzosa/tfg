@@ -130,7 +130,7 @@ mutual
     ||| Returns True when the currently focused element has the given category
     public export
     is: NodePosition -> Category -> Bool
-    is node cat = categories node `contains` cat
+    is node cat = cat `elem` categories node
 
     ||| Returns true if the given node errors the given condition
     public export
@@ -218,7 +218,7 @@ mutual
         case node !! attr of
             Nothing => []
             Just value =>
-                if words value |> map toLower |> any ((map toLower values)  `contains`) then
+                if words value |> map toLower |> any (`elem` (map toLower values)) then
                     []
                 else
                     [DoesNotIncludeAny attr values]
@@ -227,7 +227,7 @@ mutual
         case node !! attr of
             Nothing => [ShouldHave attr]
             Just value =>
-                if words value |> map toLower |> any ((map toLower values) `contains`) then
+                if words value |> map toLower |> any (`elem` (map toLower values)) then
                     []
                 else
                     [DoesNotIncludeAny attr values]
@@ -236,7 +236,7 @@ mutual
         case node !! attr of
             Nothing => []
             Just value =>
-                case words value |> map toLower |> find ((map toLower values) `contains`) of
+                case words value |> map toLower |> find (`elem` (map toLower values)) of
                     Just value => [Includes attr value]
                     Nothing => []
 
@@ -457,7 +457,7 @@ mutual
         |> filter (\child =>
             (child `is` Track)
             && (child `has` Default)
-            && ([Just "captions", Just "subtitles"] `contains` (child !! Kind))
+            && ((child !! Kind) `elem` [Just "captions", Just "subtitles"])
         ) of
             [] => []
             [_] => []
@@ -624,7 +624,7 @@ mutual
         case outline node of
             [] => []
             list =>
-                if (list `contains` 1) && validOutline list then
+                if (1 `elem` list) && validOutline list then
                     []
                 else
                     [IncorrectHeadingLevel]

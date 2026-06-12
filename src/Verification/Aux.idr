@@ -156,7 +156,7 @@ namespace Table
     public export
     nextFree : (Nat,Nat) -> List (Nat,Nat) -> (Nat,Nat)
     nextFree (i,j) cells =
-        if cells `contains` (i,j) then
+        if (i,j) `elem` cells then
             assert_total nextFree (i,j+1) cells
         else
             (i,j)
