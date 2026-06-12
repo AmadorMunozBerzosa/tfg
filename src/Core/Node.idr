@@ -96,25 +96,11 @@ namespace Tree
   is node t = tag node == Just t
 
   ||| Finds the element among a tree's descendants that meets the predicate
-  ||| and that has the given value for the given attribute
   public export
-  findElementBy: Attribute -> String -> (NodePosition -> Bool) -> NodePosition -> Maybe NodePosition
-  findElementBy attr value condition node =
-    descendants node
-    |> filter condition
-    |> find (\node' => node' !! attr == Just value)
-
-  ||| Finds the element among a tree's descendants that meets the predicate
-  ||| and that has the given value for the given attribute
-  public export
-  findElement: Attribute -> String -> NodePosition -> Maybe NodePosition
-  findElement attr value node =
-    findElementBy attr value (const True) node
+  findElement: (NodePosition -> Bool) -> NodePosition -> Maybe NodePosition
+  findElement condition = descendants .> find condition
 
   ||| Finds all the elements among a tree's descendants that meets the predicate
-  ||| and that has the given value for the given attribute
   public export
-  findElementsBy: Attribute -> String -> (NodePosition -> Bool) -> NodePosition -> List NodePosition
-  findElementsBy attr value condition node =
-    descendants node
-    |> filter (\node' => condition node' && (node' !! attr) == Just value)
+  findElements: (NodePosition -> Bool) -> NodePosition -> List NodePosition
+  findElements condition = descendants .> filter condition

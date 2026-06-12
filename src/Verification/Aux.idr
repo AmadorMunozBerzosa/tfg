@@ -28,7 +28,7 @@ public export
 owner: NodePosition -> Maybe NodePosition
 owner node =
     case node !! For of
-        Just form => findElement Name form (root node)
+        Just form => root node |> findElement (\node => node !! Name == Just form)
         Nothing => closest (`is` Form) node
 
 -- Functions for verifying that headings are well nested, according to:
@@ -86,17 +86,20 @@ namespace Heading
 
 -- Auxiliary function for verifying <meta> elements
 namespace Meta
-    ||| Returns true if the element is a <meta> tag and the "name" attribute has the given value
+    ||| Returns true if the element is a <meta> tag
+    ||| and the "name" attribute has the given value
     public export
     metaHasName : String -> NodePosition -> Bool
     metaHasName name node = map toLower (node !! Name) == Just name
 
-    ||| Returns true if the element is a <meta> tag and the "http-equiv" attribute has the given value
+    ||| Returns true if the element is a <meta> tag
+    ||| and the "http-equiv" attribute has the given value
     public export
     metaHasState : String -> NodePosition -> Bool
     metaHasState name node = map toLower (node !! HttpEquiv) == Just name
 
-    ||| Returns the value of the "http-equiv" attribute if present on a <meta> element, or `Nothing` otherwise
+    ||| Returns the value of the "http-equiv" attribute
+    ||| if present on a <meta> element, or `Nothing` otherwise
     public export
     metaState : NodePosition -> Maybe String
     metaState node = map toLower (node !! HttpEquiv)

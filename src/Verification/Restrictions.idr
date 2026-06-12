@@ -293,7 +293,9 @@ mutual
     errors (References attr attr') node =
         case node !! attr of
             Just value =>
-                let reference = root node |> findElement attr' value in
+                let reference =
+                    root node |> findElement (\node => node !! attr' == Just value)
+                in
 
                 if isJust reference then [] else [NoReference attr attr' value]
 
@@ -302,7 +304,13 @@ mutual
     errors (ReferencesTag attr (tag',attr')) node =
         case node !! attr of
             Just value =>
-                let reference = root node |> findElementBy attr' value (tag .> (== Just tag')) in
+                let reference =
+                        root node
+                        |> findElement (\node =>
+                            tag node == Just tag'
+                            && node !! attr' == Just value
+                            )
+                in
 
                 if isJust reference then [] else [NoReferenceTag attr (tag', attr') value]
 
@@ -311,7 +319,13 @@ mutual
     errors (ReferencesAttribute attr (attr'',attr')) node =
         case node !! attr of
             Just value =>
-                let reference = root node |> findElementBy attr' value (`has` attr'') in
+                let reference =
+                        root node
+                        |> findElement (\node =>
+                            node !! attr' == Just value
+                            && (node `has` attr'')
+                        )
+                in
 
                 if isJust reference then [] else [NoReferenceAttribute attr (attr'',attr') value]
 
@@ -320,7 +334,13 @@ mutual
     errors (ReferencesCategory attr (cat,attr')) node =
         case node !! attr of
             Just value =>
-                let reference = root node |> findElementBy attr' value (`is` cat) in
+                let reference =
+                        root node
+                        |> findElement (\node =>
+                            (node `is` cat)
+                            && node !! attr' == Just value
+                        )
+                in
 
                 if isJust reference then [] else [NoReferenceCategory attr (cat,attr') value]
             Nothing => []
@@ -328,7 +348,14 @@ mutual
     errors (EachReferencesId attr) node =
         case node !! attr of
             Just value =>
-                let invalid =  words value |> filter (\value => root node |> findElementBy Id value (const True) |> isNothing) in
+                let invalid = 
+                        words value
+                        |> filter (\value =>
+                                root node
+                                |> findElement (\node => node !! Id == Just value)
+                                |> isNothing
+                            )
+                in
 
                 if null invalid then [] else [NotEachReferencesId attr invalid]
 
@@ -340,7 +367,14 @@ mutual
 
         case (ids, table) of
             (Just value, Just table) =>
-                let invalid =  words value |> filter (\value => table |> findElementBy Id value (`is` Th) |> isNothing) in
+                let invalid =
+                        words value
+                        |> filter (\value =>
+                                table
+                                |> findElement (\node => node !! Id == Just value && (node `is` Th))
+                                |> isNothing
+                            )
+                in
 
                 if null invalid then [] else [NotEachReferencesId attr invalid]
             _ => []
@@ -378,23 +412,40 @@ mutual
             Nothing => [NextSiblingIsNotAny tags]
 
     -- Ancestor elements
-    errors (HasAncestor tag) node = if ancestors node |> any (`is` tag) then [] else [NoAncestor tag]
+    errors (HasAncestor tag) node =
+        if ancestors node |> any (`is` tag) then
+            []
+        else
+            [NoAncestor tag]
+
     errors (NoAncestor tag) node =
         case ancestors node |> filter (`is` tag) of
             [] => []
             nodes => [HasAncestor tag nodes]
 
     errors (HasAncestorAttribute tag attr) node =
-        if ancestors node |> any (\node => (node `is` tag) && (node `has` attr)) then [] else [NoAncestorAttribute tag attr]
+        if ancestors node |> any (\node => (node `is` tag) && (node `has` attr)) then
+            []
+        else
+            [NoAncestorAttribute tag attr]
     
     -- Child elements
-    errors (HasChild tag) node = if children node |> any (`is` tag) then [] else [NoChild tag]
+    errors (HasChild tag) node =
+        if children node |> any (`is` tag) then
+            []
+        else [NoChild tag]
+
     errors (NoChild tag) node =
         case children node |> filter (`is` tag) of
             [] => []
             nodes => [HasChildrenTag tag nodes]
 
-    errors (HasChildCategory cat) node = if children node |> any (`is` cat) then [] else [NoChildCategory cat]
+    errors (HasChildCategory cat) node =
+        if children node |> any (`is` cat) then
+            []
+        else
+            [NoChildCategory cat]
+
     errors (UniqueChild tag) node =
         case children node |> filter (`is` tag) of
             [] => []
@@ -424,8 +475,18 @@ mutual
             nodes => [MultipleDefaultDescription nodes]
 
     -- Descendant elements
-    errors (HasDescendant tag) node = if descendants node |> any (`is` tag) then [] else [NoDescendant tag]
-    errors (HasDescendantCategory cat) node = if descendants node |> any (`is` cat) then [] else [NoDescendantCategory cat]
+    errors (HasDescendant tag) node =
+        if descendants node |> any (`is` tag) then
+            []
+        else
+            [NoDescendant tag]
+
+    errors (HasDescendantCategory cat) node =
+        if descendants node |> any (`is` cat) then
+            []
+        else
+            [NoDescendantCategory cat]
+
     errors (NoDescendant tag) node =
         case descendants node |> filter (`is` tag) of
             [] => []
@@ -562,25 +623,44 @@ mutual
     errors CorrectHeadingLevel node =
         case outline node of
             [] => []
-            list => if (list `contains` 1) && validOutline list then [] else [IncorrectHeadingLevel]
+            list =>
+                if (list `contains` 1) && validOutline list then
+                    []
+                else
+                    [IncorrectHeadingLevel]
     
     errors OtherRadioGroupOptions node =
         let
             name = node !! Name
             for = node !! For
             form = closest (`is` Form) node
-            isRadioButton = \node => (node `is` Input) && (node !! Type') == Just "radio"
             in
 
-        case (name,form, for) of
+        case (name, form, for) of
             (Just name, Just form, _) =>
-                if length (findElementsBy Name name isRadioButton form) > 1 then
+                let group =
+                    form |> findElements (\node =>
+                        (node `is` Input)
+                        && (node !! Type') == Just "radio"
+                        && (node !! Name) == Just name
+                        )
+                in
+
+                if length group > 1 then
                     []
                 else
                     [NoOtherRadioGroupOptions]
 
             (Just name, _, Just for) =>
-                if length (findElementsBy Name name (\node => isRadioButton node && (node !! For) == Just for) (root node)) > 1 then
+                let group =
+                    root node |> findElements (\node =>
+                        (node `is` Input)
+                        && (node !! Name) == Just name
+                        && (node !! For) == Just for
+                        )
+                in
+
+                if length group > 1 then
                     []
                 else
                     [NoOtherRadioGroupOptions]
@@ -604,7 +684,11 @@ mutual
         case node !! Name of
             Just name =>
                 case root node
-                |> findElementsBy Name name (\node => (node `is` Details) && (node `has` Open))
+                |> findElements (\node =>
+                    (node `is` Details)
+                    && (node `has` Open)
+                    && ((node !! Name) == Just name)
+                )
                 of
                     [] => []
                     [_] => []
