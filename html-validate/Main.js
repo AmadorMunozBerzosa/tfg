@@ -42,7 +42,7 @@ const transform = async file => {
             }
         }
         finally {
-            // await unlink(outputFile);
+            await unlink(outputFile);
         }
     })
 }
