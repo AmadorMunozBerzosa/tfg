@@ -31,7 +31,7 @@ report indexes node =
 
 
 ||| Given a HTML node, it validates it and prints the 
-reportNode: Tree Index -> Node -> IO Unit
+reportNode: Tree Index -> Node -> IO ()
 reportNode indexes node = do
     case report indexes (fromTree node) of
         [] => putStrLn "Valid document"
@@ -39,7 +39,7 @@ reportNode indexes node = do
 
 ||| Given a path, it parses the contents of the file
 ||| in that path into a Node value
-readFile: String -> IO Unit
+readFile: String -> IO ()
 readFile path =
     case !(withFile path Read pure fRead) of
         Left error => putStrLn "Error: \{fileErrorMessage error}"
@@ -56,7 +56,7 @@ readFile path =
 ||| It transforms it into HTML and validates it.
 ||| It outputs a list of validation errors, or "Valid document" if
 ||| it can't find any
-main: IO Unit
+main: IO ()
 main =
     case !getArgs of
         [] => putStrLn "Error: Not enough arguments. Expecting the path of the .json file"

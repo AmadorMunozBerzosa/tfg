@@ -124,7 +124,7 @@ mapMaybe f parser = do
 
 ||| Succeeds for every token and consumes all tokens
 public export
-anything: Parseable b => Parser b Unit
+anything: Parseable b => Parser b ()
 anything = From (\_ => Accept () empty)
 
 ||| Always succeeds. Parses True if the stream has no more tokens
@@ -153,7 +153,7 @@ requireConsuming parser = From (\tokens =>
 
 ||| Parses the empty stream
 public export
-nothing: Parseable b => Parser b Unit
+nothing: Parseable b => Parser b ()
 nothing = if !emptyStream then pure () else empty
 
 
@@ -203,7 +203,7 @@ namespace Combinators
     ||| Runs a parser. If it doesn't succeed, it tries the second one.
     ||| It discards the result
     public export
-    (||): Alternative f => f a -> f b -> f Unit
+    (||): Alternative f => f a -> f b -> f ()
     (||) a b = ignore (a .<|>. b)
 
     ||| Parses 0 or 1 occurrences of a given parser
@@ -249,7 +249,7 @@ namespace Combinators
 namespace List
     public export
     ||| Parses a token and, if successful, returns the rest
-    atomic: (a -> Bool) -> Parser (List a) Unit
+    atomic: (a -> Bool) -> Parser (List a) ()
     atomic pred = From (\case
         [] => Reject
         x::xs => if pred x then Accept () xs else Reject
@@ -257,7 +257,7 @@ namespace List
 
     ||| Terminal parser. Checks whether all tokens meet a predicate
     public export
-    all: (a -> Bool) -> Parser (List a) Unit
+    all: (a -> Bool) -> Parser (List a) ()
     all pred = From (\case
         [] => Accept () []
         x::xs => if pred x then run (all pred) xs else Reject
@@ -292,7 +292,7 @@ namespace String
 
     ||| Parses a string without whitespace between words
     public export
-    word: Parser String Unit
+    word: Parser String ()
     word = From (\string =>
         case words string of
             [] => Reject
@@ -303,12 +303,12 @@ namespace String
 -- 
 ||| Parses a string without newlines
 public export
-singleLine: Parser String Unit
+singleLine: Parser String ()
 singleLine = From (\string => if "\n" `isInfixOf` string then Reject else Accept () "")
 
 ||| Parses a string without whitespace between words
 public export
-singleWord: Parser String Unit
+singleWord: Parser String ()
 singleWord = From (\string =>
         case words string of
         [_] => if trim string == string then Accept () "" else Reject
@@ -317,7 +317,7 @@ singleWord = From (\string =>
 
 ||| Parses an exact ocurrence of a string
 public export
-literal: String -> Parser String Unit
+literal: String -> Parser String ()
 literal string' = From (\string =>
         if string' `isPrefixOf` string then
             Accept () (string |> drop (length string'))
@@ -327,7 +327,7 @@ literal string' = From (\string =>
 
 ||| Parses whitespace characters
 public export
-whitespace: Parser String Unit
+whitespace: Parser String ()
 whitespace = From (\string => Accept () (ltrim string))
 
 ||| Parses a 0-9 digit as a character
@@ -534,18 +534,18 @@ week =
 
 ||| Parses a autofill hint
 public export
-autoFill: Parser String Unit
+autoFill: Parser String ()
 autoFill =
     optional (a >> literal " ") >>. optional (b >> literal " ") >>. c .>> optional (literal " " >> d)
     
     where
-        a: Parser String Unit
+        a: Parser String ()
         a = literal "section-" >> word
 
-        b: Parser String Unit
+        b: Parser String ()
         b = literal "shipping" || literal "billing"
     
-        c: Parser String Unit
+        c: Parser String ()
         c = choiceMap literal [
             "name", "honorific-prefix", "given-name", "additional-name", "family-name", "honorific-suffix",
             "nickname", "username", "new-password", "current-password", "one-time-code", "organization-title",
@@ -563,7 +563,7 @@ autoFill =
             ]
             )
 
-        d: Parser String Unit
+        d: Parser String ()
         d = literal "webauthn"
 
 ||| Parses a list of decimal numbers, together with the separator

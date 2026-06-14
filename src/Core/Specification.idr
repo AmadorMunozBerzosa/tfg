@@ -41,11 +41,16 @@ data ElementContentModel =
       (>>>) ContentModel 
     | When (List (Condition, ContentModel)) ContentModel
 
--- The requirements an HTML element must belong to
+||| The requirements an HTML element must belong to
 public export
 record Specification where
     constructor Spec
-    categories: List ElementCategory -- Categories it belongs to
-    contentModel: ElementContentModel -- Model its content must follow
-    {default [] attributes: List Attribute} -- Allowed attributes (other than global attributes)
-    {default [] restrictions: Condition} -- Miscellaneous restrictions
+
+    -- Categories it belongs to
+    categories: List ElementCategory
+    -- Model its content must follow
+    contentModel: ElementContentModel
+    -- Allowed attributes (other than global attributes)
+    {default [] attributes: List Attribute}
+    -- Miscellaneous restrictions
+    {default [] restrictions: Condition}

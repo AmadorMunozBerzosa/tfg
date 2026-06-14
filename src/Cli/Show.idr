@@ -266,17 +266,42 @@ Show ContentModel where
     show (Tag tag) = "<\{show tag}>"
     show (Category category) = "\{show category} element"
     
-    show (Optional model) = if isCompound model then "(\{show model})?" else "\{show model}?"
-    show (Many model) = if isCompound model then "(\{show model})*" else "\{show model}*"
-    show (AtLeastOne model) =  if isCompound model then "(\{show model})+" else "\{show model}+"
-    show (Intermixed category model) = "\{show model}, optionally intermixed with \{show category} elements"
+    show (Optional model) =
+        if isCompound model then
+            "(\{show model})?"
+        else
+            "\{show model}?"
+
+    show (Many model) =
+        if isCompound model then
+            "(\{show model})*"
+        else
+            "\{show model}*"
+
+    show (AtLeastOne model) =
+        if isCompound model then
+            "(\{show model})+"
+        else
+            "\{show model}+"
+
+    show (Intermixed category model) =
+        "\{show model}, optionally intermixed with \{show category} elements"
 
     show (Sequence []) = ""
     show (Sequence [m]) = show m
-    show (Sequence (m::ms)) = if isCompound m then "(\{show m}) -> \{show (Sequence ms)}" else "\{show m} -> \{show (Sequence ms)}"
+    show (Sequence (m::ms)) =
+        if isCompound m then
+            "(\{show m}) -> \{show (Sequence ms)}"
+        else
+            "\{show m} -> \{show (Sequence ms)}"
+
     show (Any []) = ""
     show (Any [m]) = show m
-    show (Any (m::ms)) = if isCompound m then "(\{show m}) | \{show (Any ms)}"  else "\{show m} | \{show (Any ms)}" 
+    show (Any (m::ms)) =
+        if isCompound m then
+            "(\{show m}) | \{show (Any ms)}"
+        else
+            "\{show m} | \{show (Any ms)}" 
 
     show (Transparent Nothing) = "Transparent"
     show (Transparent model) = "\{show model} -> Transparent"

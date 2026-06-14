@@ -34,7 +34,7 @@ globalAttributes = [
 ||| The attribute name is needed, since Boolean attributes allow their
 ||| value to be the attribute's name
 public export
-parser : Attribute -> Format -> Parser String Unit
+parser : Attribute -> Format -> Parser String ()
 parser _ Anything = anything
 
 parser _ (Text str') = literal (toLower str')
@@ -60,36 +60,40 @@ parser name (Set separator format) = list (literal separator) (keepOriginal (par
 
 parser name Boolean = nothing || literal (show name)
 
-parser _ Size =
-    literal "any" .<|>. (atLeastOne digit .>>. literal "x" .>>. atLeastOne digit)
-    >>= ( guard .
-        \case
+parser _ Size = do
+    size <- literal "any" .<|>. (atLeastOne digit .>>. literal "x" >>. atLeastOne digit)
+
+    guard (
+        case size of
             Left () => True
-            Right ('0'::_, (), _) => False
-            Right (_, (), '0'::_) => False
+            Right ('0'::_, _) => False
+            Right (_, '0'::_) => False
             Right _ => True
-    )
+        )
         
 -- 
-parser _ CircleCoords =
-    list (literal " ") integer
-    >>= ( guard .
-        \case
+parser _ CircleCoords = do
+    list <- list (literal " ") integer
+
+    guard (
+        case list of
             [left, top, radius] => radius >= 0
             _ => False
-    )
+        )
 
-parser _ RectCoords = 
-    list (literal " ") integer
-    >>= (
-        \case
-            [first, second, third, fourth] => first < third && second < fourth
-            _ => False
-    ) .> guard
+parser _ RectCoords = do
+    list <- list (literal " ") integer
 
-parser _ PolygonCoords =
-    list (literal " ") integer
-    >>= (\list => not (null list) && (cast (length list) `mod` 2) == 0) .> guard
+    guard (
+        case list of
+        [first, second, third, fourth] => first < third && second < fourth
+        _ => False
+        )
+
+parser _ PolygonCoords = do
+    list <- list (literal " ") integer
+
+    guard (not (null list) && (cast (length list) `mod` 2) == 0)
 
 parser _ NavigableTargetName = From (\string =>
     if

@@ -38,7 +38,7 @@ contentModel node =
 
 ||| Returns a parser that checks whether a list of children follows the given model
 public export
-parser': ContentModel -> Parser (List NodePosition) Unit
+parser': ContentModel -> Parser (List NodePosition) ()
 
 parser' Anything = anything
 
@@ -99,7 +99,7 @@ removeWhitespaceAndComments = filter (\node =>
 ||| Returns a parser that checks whether a list of children follows the given model.
 ||| It first removes whitespace text nodes and comments, and it also accounts for transparent elements
 public export
-parser: ContentModel -> Parser (List NodePosition) Unit
+parser: ContentModel -> Parser (List NodePosition) ()
 parser model = From (\elements =>
     run (parser' model) ((removeWhitespaceAndComments .> replaceTransparent) elements)
     )

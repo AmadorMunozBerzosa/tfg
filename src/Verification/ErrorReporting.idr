@@ -42,7 +42,7 @@ errors' node =
     (
         case validate node of
             Nothing => []
-            Just model => [FailedContentModel model]    
+            Just model => [FailedContentModel model]
     )
     ++
     map ViolatedRestriction (Restrictions.validate node)

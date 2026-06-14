@@ -219,12 +219,9 @@ namespace Table
     public export
     columnWidth: NodePosition -> Nat
     columnWidth col =
-        case col !! Span of
+        case (col !! Span) >>= parsePositive of
             Nothing => 1
-            Just span =>
-                case parsePositive span of
-                    Just num => min 1000 (max 1 num)
-                    Nothing => 1
+            Just num => min 1000 (max 1 num)
 
     ||| It returns the amount of columns that a <colgroup> element declares
     public export
