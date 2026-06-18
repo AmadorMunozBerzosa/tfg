@@ -287,21 +287,15 @@ Show ContentModel where
     show (Intermixed category model) =
         "\{show model}, optionally intermixed with \{show category} elements"
 
-    show (Sequence []) = ""
-    show (Sequence [m]) = show m
-    show (Sequence (m::ms)) =
-        if isCompound m then
-            "(\{show m}) -> \{show (Sequence ms)}"
-        else
-            "\{show m} -> \{show (Sequence ms)}"
+    show (Sequence list) =
+        list
+        |> assert_total map (\m => if isCompound m then "(\{show m})" else show m)
+        |> join " -> "
 
-    show (Any []) = ""
-    show (Any [m]) = show m
-    show (Any (m::ms)) =
-        if isCompound m then
-            "(\{show m}) | \{show (Any ms)}"
-        else
-            "\{show m} | \{show (Any ms)}" 
+    show (Any list) =
+        list
+        |> assert_total map (\m => if isCompound m then "(\{show m})" else show m)
+        |> join " | "
 
     show (Transparent Nothing) = "Transparent"
     show (Transparent model) = "\{show model} -> Transparent"
