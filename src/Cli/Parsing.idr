@@ -397,7 +397,7 @@ parseText object = lookup "content" object >>= parseString |> map Text
 parseAttribute: JSON -> Maybe (Attribute, String)
 parseAttribute node = do
     object <- parseObject node
-    key <- lookup "key" object >>= parseString
+    key <- lookup "key" object >>= parseString |> map toLower
     let value = lookup "value" object >>= parseString |> fromMaybe ""
     
     Just (attribute key,value)

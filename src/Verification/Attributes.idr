@@ -97,13 +97,13 @@ parser _ PolygonCoords = do
 
 parser _ NavigableTargetName = From (\string =>
     if
-        ("_" `isInfixOf` string)
+        (
+            (("\n" `isInfixOf` string) || ("\t" `isInfixOf` string))
+            &&
+            ("<" `isInfixOf` string)      
+        )
         ||
-        ("\n" `isInfixOf` string)
-        ||
-        ("\t" `isInfixOf` string)
-        ||
-        ("<" `isInfixOf` string)
+        ("_" `isPrefixOf` string)
     then
         Reject
     else

@@ -320,6 +320,7 @@ Show (Map Attribute String) where
 
 Show Error where
     show (ViolatedRestriction error) = show error
+    show (InvalidAttribute (Custom attr)) = "Unknown attribute \"\{attr}\""
     show (InvalidAttribute attr) = "Unknown attribute \"\{show attr}\""
     show (FailedContentModel contentModel) = "Invalid content. Expecting: \{show contentModel}"
  

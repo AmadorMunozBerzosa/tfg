@@ -67,7 +67,7 @@ specification Input = Just <| Spec {
     
     restrictions = [
         Autocomplete `Is` Autocomplete,
-        (Autocomplete `Is` "on" || "off") ==> HasNot Hidden,
+        (Autocomplete `IncludesRequired` ["on", "off"]) ==> (Type' `IsNot` "hidden"),
 
         Checked `Is` Boolean,
         NotEmpty Dirname,

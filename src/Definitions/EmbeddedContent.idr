@@ -289,7 +289,7 @@ specification  Area = Just <| Spec {
         Target `Is` NavigableTargetName || NavigationKeyword,
         Download `Is` Anything,
         Ping `Is` List " " URL,
-        Rel `Is` List " " ("norefferer" || "noopener" || "opener"),
+        Rel `Is` List " " ("noreferrer" || "noopener" || "opener"),
         Referrerpolicy `Is` ReferrerPolicy,
         HasAncestor Map,
         Has Href ==> Has Alt,
