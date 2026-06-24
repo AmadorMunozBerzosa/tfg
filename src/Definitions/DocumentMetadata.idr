@@ -81,8 +81,8 @@ specification Link = Just <| Spec {
         HasAtMostOne [Rel,Itemprop],
         Has Imagesrcset ==> Has Imagesizes,
         Has Sizes ==> Rel `IncludesAny` ["icon", "apple-touch-icon"],
-        As `IsRequired` PreloadDestination ==> Rel `IncludesAny` ["preload"],
-        As `IsRequired` ModulePreloadDestination ==> Rel `IncludesAny` ["modulepreload"],
+        Rel `IncludesRequired` ["preload"] ==> As `IsRequired` PreloadDestination,
+        Rel `IncludesRequired` ["modulepreload"] ==> As `IsRequired` ModulePreloadDestination,
         
         Has Blocking ==> Has Rel,
         Has Blocking ==> Rel `IncludesAny` ["stylesheet", "expect"],

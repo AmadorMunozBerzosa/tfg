@@ -31,7 +31,7 @@ public export
 split: List (a,b) -> (List a, List b)
 split list = go list [] [] where
     go: List (a,b) -> List a -> List b -> (List a, List b)
-    go [] as bs = (as, bs)
+    go [] as bs = (reverse as, reverse bs)
     go ((a,b)::xs) as bs = go xs (a::as) (b::bs)
 
 ||| Given a value, it tries to apply a list of function until one of them
