@@ -100,8 +100,8 @@ removeWhitespaceAndComments = filter (\node =>
 ||| It first removes whitespace text nodes and comments, and it also accounts for transparent elements
 public export
 parser: ContentModel -> Parser (List NodePosition) ()
-parser model = From (\elements =>
-    run (parser' model) ((removeWhitespaceAndComments .> replaceTransparent) elements)
+parser model = From (
+    removeWhitespaceAndComments .> replaceTransparent .> run (parser' model)
     )
     
 
