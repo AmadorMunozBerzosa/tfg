@@ -360,11 +360,11 @@ namespace Format
 
     public export
     Cors : Format
-    Cors = "anonymous" || "use-credentials"
+    Cors = "anonymous" || "use-credentials" || ""
 
     public export
     Preload : Format
-    Preload = "auto" || "none" || "metadata"
+    Preload = "auto" || "none" || "metadata" || ""
 
     public export
     NavigationKeyword : Format

@@ -710,9 +710,8 @@ globalRestrictions = [
     Lang `Is` LanguageCode,
     Class `Is` Set " " Anything,
     Id `Is` NoWhitespace,
-    Id `IsNot` "",
     Unique Id,
-    Translate `Is` "yes" || "no",
+    Translate `Is` "yes" || "no" || "",
     Dir `Is` "ltr" || "rtl" || "auto"
 ]
 
