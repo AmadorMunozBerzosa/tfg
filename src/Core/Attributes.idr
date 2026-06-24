@@ -400,4 +400,5 @@ public export
 Show Attribute where
     show HttpEquiv = "http-equiv"
     show AcceptCharset = "accept-charset"
+    show Type' = "type"
     show attr = toLower (show @{showDefault} attr)
