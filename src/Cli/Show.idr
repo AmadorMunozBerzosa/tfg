@@ -34,7 +34,7 @@ Show Format where
     show RectCoords = "Rectangle coordinates"
     show PolygonCoords = "Polygon coordinates"
 
-    show NavigableTargetName = "Navigable target name (not containing newlines, tabulators, \"_\" or \"<\""
+    show NavigableTargetName = "Navigable target name (can't contain \"_\" or both \"<\" and a newline or tabulator)"
 
     show NotURL = "Not URL"
     show URL = "URL"
@@ -183,7 +183,7 @@ Show ConditionError where
     show (HasMultiple attrs) = "Should only have one of the following attributes: \{joinBy ", " (map show attrs)}"
     -- Attribute values
     show (Empty attr) = "The value of the \"\{show attr}\" can't be empty"
-    show (Is attr string) = "The value of the attribute \"\{show attr}\" can't be \{string}"
+    show (Is attr string) = "The value of the attribute \"\{show attr}\" can't be \"\{string}\""
     show (Is' attr format value) = "The value of the attribute \"\{show attr}\" can't be of the form: \{show format}. Found \"\{value}\""
     show (IsNot attr format value) = "The value of the \"\{show attr}\" must be of the form: \{show format}. Found: \"\{value}\""
     show (DoesNotIncludeAny attr [value]) = "Attribute \"\{show attr}\" must contain the \{value} value"
@@ -195,7 +195,7 @@ Show ConditionError where
     -- Attributes values within the context of the document
     show (NotUnique attr value _) = "There are multiple elements with \"\{show attr}=\{value}\""
     show (NotUniqueTag attr value Nothing _) = "There are multiple elements with \"\{show attr}=\{value}\""
-    show (NotUniqueTag attr value (Just tag) _) = "There are multiple <\{show tag}> elements with the same tag and \"\{show attr}=\{value}\""
+    show (NotUniqueTag attr value (Just tag) _) = "There are multiple <\{show tag}> elements with \"\{show attr}=\{value}\""
     show (NoReference attr attr' value) = "There aren't any elements with \"\{show attr'}\=\{value}\""
     show (NoReferenceTag attr (tag, attr') value) = "There aren't any <\{show tag}> elements with \"\{show attr'}\=\{value}\""
     show (NoReferenceCategory attr (cat, attr') value) = "There aren't any \{show cat} elements with \"\{show attr'}\=\{value}\""
@@ -321,7 +321,7 @@ Show (Map Attribute String) where
 Show Error where
     show (ViolatedRestriction error) = show error
     show (InvalidAttribute (Custom attr)) = "Unknown attribute \"\{attr}\""
-    show (InvalidAttribute attr) = "Unknown attribute \"\{show attr}\""
+    show (InvalidAttribute attr) = "Invalid attribute \"\{show attr}\""
     show (FailedContentModel contentModel) = "Invalid content. Expecting: \{show contentModel}"
  
 Show Node where
@@ -344,4 +344,6 @@ public export
     show (Branch (Element tag []) children) = 
         "<\{show tag}>\{children |> map (assert_total show) |> join ""}</\{show tag}>"
     show (Branch (Element tag attributes) children) = 
-        "<\{show tag} \{attributes |> Map.toList |> map (\(attr,val) => "\{show attr}=\"\{val}\"") |> join " "}>\{children |> map (assert_total show) |> join ""}</\{show tag}>"
+        let children = children |> map (assert_total show) |> join "" in
+
+        "<\{show tag} \{attributes |> Map.toList |> map (\(attr,val) => show attr ++ "=\"" ++ val ++ "\"") |> join " "}>\{children}</\{show tag}>"
