@@ -59,32 +59,32 @@ specification Aside = Just <| Spec {
 
 specification H1 = Just <| Spec {
     categories = [ >>> Flow, >>> Heading, >>> Palpable],
-    contentModel = >>> Many (Category Flow)
+    contentModel = >>> Many (Category Phrasing)
 }
 
 specification H2 = Just <| Spec {
     categories = [ >>> Flow, >>> Heading, >>> Palpable],
-    contentModel = >>> Many (Category Flow)
+    contentModel = >>> Many (Category Phrasing)
 }
 
 specification H3 = Just <| Spec {
     categories = [ >>> Flow, >>> Heading, >>> Palpable],
-    contentModel = >>> Many (Category Flow)
+    contentModel = >>> Many (Category Phrasing)
 }
 
 specification H4 = Just <| Spec {
     categories = [ >>> Flow, >>> Heading, >>> Palpable],
-    contentModel = >>> Many (Category Flow)
+    contentModel = >>> Many (Category Phrasing)
 }
 
 specification H5 = Just <| Spec {
     categories = [ >>> Flow, >>> Heading, >>> Palpable],
-    contentModel = >>> Many (Category Flow)
+    contentModel = >>> Many (Category Phrasing)
 }
 
 specification H6 = Just <| Spec {
     categories = [ >>> Flow, >>> Heading, >>> Palpable],
-    contentModel = >>> Many (Category Flow)
+    contentModel = >>> Many (Category Phrasing)
 }
 
 specification Hgroup = Just <| Spec {
